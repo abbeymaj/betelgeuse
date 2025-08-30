@@ -1,0 +1,6 @@
+numpy
+pandas
+pytest
+beautifulsoup4
+requests
+#-e .
