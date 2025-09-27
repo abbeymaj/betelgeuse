@@ -57,35 +57,3 @@ def extract_date(row):
     
     except Exception as e:
         raise CustomException(e, sys)
-
-# Creating a helper function to convert the calendar date to datetime format
-def convert_calendar_date_to_datetime(df:pd.DataFrame):
-    '''
-    This method converts the calendar date to a datetime object.
-    =================================================================================
-    ---------------
-    Parameters:
-    ---------------
-    df : pandas dataframe -> This is the pandas dataframe with the date feature.
-    
-    ---------------
-    Returns:
-    ---------------
-    df : pandas dataframe -> This is the pandas dataframe with the date feature
-    converted to a datetime object.
-    =================================================================================
-    '''
-    try:
-        # Extracting the date from the Calendar Date feature
-        df['Date'] = df['Calendar_Date'].apply(lambda x: extract_date_feature(x))
-
-        # Covnerting the Date feature into a DateTime feature
-        df['Date'] = pd.to_datetime(df['Date'], infer_datetime_format=True)
-
-        # Sorting the dataframe by the Date feature and dropping duplicates
-        df = df.sort_values(by='Date').drop_duplicates(['Date'], keep='last')
-
-        return df
-    
-    except Exception as e:
-        raise CustomException(e, sys)
