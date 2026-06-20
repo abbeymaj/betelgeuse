@@ -39,8 +39,13 @@ class FetchData():
             # Defining the URL to fetch the data
             url = self.source_data_url.url
             
+            # Adding User-Agent header to prevent being blocked by the website
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+            
             # Defining the number of pages to scrape
-            pages = np.arange(0,3,1)
+            pages = np.arange(0,6,1)
             
             # Creating empty lists to store the column names and data rows
             col_ls = []
@@ -49,7 +54,7 @@ class FetchData():
             # Scraping the data from the AAVSO website
             for i in pages:
                 url = url+str(i)
-                res = requests.get(url)
+                res = requests.get(url, headers=headers)
                 text = res.text
                 data = bs(text, 'html.parser')
                 tbl = data.select('table.observations')[0]
