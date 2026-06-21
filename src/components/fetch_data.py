@@ -45,7 +45,7 @@ class FetchData():
             }
             
             # Defining the number of pages to scrape
-            pages = np.arange(0,6,1)
+            pages = np.arange(0,3,1)
             
             # Creating empty lists to store the column names and data rows
             col_ls = []
