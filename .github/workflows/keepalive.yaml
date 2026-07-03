@@ -1,18 +1,27 @@
-name: Keep Alive
-
+name: Keep Repo Alive
 on:
   schedule:
+    # Runs at 00:00 UTC on the 1st of every month
     - cron: '0 0 1 * *'
-  workflow_dispatch:
-
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+permissions:
+  contents: write
 jobs:
-  keepalive:
+  keep-alive:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Keep Github Actions Alive
-        uses: liskin/gh-workflow-keepalive@v1
+      - name: Update timestamp file
+        run: |
+          mkdir -p .github/keepalive
+          echo "Last kept alive: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" > .github/keepalive/last-run.txt
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/keepalive/last-run.txt
+          git diff --staged --quiet || git commit -m "chore: keep-alive commit [skip ci]"
+          git push
