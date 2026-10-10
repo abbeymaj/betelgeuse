@@ -23,56 +23,59 @@ class FetchData():
         self.source_data_url = SourceDataURL()
     
     # Creating a method to fetch the data from the AAVSO website
-    def fetch_data(self):
+    def fetch_photometric_data(
+        self,
+        star: str, 
+        from_jd: float, 
+        to_jd: float, 
+        delimiter: str = "|"
+        ) -> str:
         '''
-        This method fetches the magnitude data from the AAVSO website. The method uses
-        webscraping to obtain the data. 
-        ==================================================================================
+        This helper function fetches the photometric data for a given star from the AAVSO 
+        website.
+        ====================================================================================
+        ---------------
+        Parameters:
+        ---------------
+        star : str -> This is the name of the star for which the photometric data is to be 
+        fetched. The Star identifier must be as AAVSO/VSX recognizes it, e.g. "alf Ori" 
+        for Betelgeuse.
+        from_jd : float -> This is the starting Julian date for the data fetch.
+        to_jd : float -> This is the ending Julian date for the data fetch.
+        delimiter : str -> This is the delimiter used in the fetched data. Default is "|".
+        
         ---------------
         Returns:
         ---------------
-        col_ls : list -> This is a list of the column names for the magnitude data.
-        row_ls : list -> This is a list of the data rows for the magnitude data.
-        ==================================================================================
+        data : str -> This is the photometric data fetched from the AAVSO website as a 
+        string.
+        ====================================================================================
         '''
         try:
-            # Defining the URL to fetch the data
-            url = self.source_data_url.url
+            # Defining the path
+            VSX_API_URL = SourceDataURL.url
             
-            # Adding User-Agent header to prevent being blocked by the website
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            # Defining the parameters for the API request
+            params = {
+            "view": "api.delim",
+            "ident": star,
+            "fromjd": from_jd,
+            "tojd": to_jd,
+            "delimiter": delimiter
             }
             
-            # Defining the number of pages to scrape
-            pages = np.arange(0,3,1)
+            # Defining the header for the API request
+            # A descriptive UA is good practice when hitting a research org's API
+            headers = {
+                "User-Agent": "aavso-photometry-client/1.0 (research use)"
+                }
             
-            # Creating empty lists to store the column names and data rows
-            col_ls = []
-            row_ls = []
+            # Fetching the data from the AAVSO API
+            resp = requests.get(VSX_API_URL, params=params, headers=headers, timeout=30)
+            resp.raise_for_status()
+            txt = resp.text
             
-            # Scraping the data from the AAVSO website
-            for i in pages:
-                url = url+str(i)
-                res = requests.get(url, headers=headers)
-                text = res.text
-                data = bs(text, 'html.parser')
-                tbl = data.select('table.observations')[0]
-                if i == 1:
-                    cols = tbl.find('thead').find_all('th')
-                    for col in cols[1:-1]:
-                        col_ls.append(col.string)
-                else:
-                    rows = tbl.find('tbody').find_all('tr', attrs={'class': ['obs tr-even', 'obs tr-odd']})
-                    for row in rows:
-                        td = row.find_all('td')
-                        td_row = tuple(str(tr.get_text().strip()) for tr in td[1:-1])
-                        row_ls.append(td_row)
-                
-                # Adding a random sleeo time to avoid being blocked by the AAVSO website
-                sleep(randint(3,10))
-        
-            return col_ls, row_ls
+            return txt
         
         except Exception as e:
             raise CustomException(e, sys)

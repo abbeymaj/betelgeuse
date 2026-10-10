@@ -14,6 +14,7 @@ class DataBaseConfig():
 @dataclass
 class SourceDataURL():
     '''
-    This class stores the source data URL.
+    This class stores the source data URL. Fetches photometry observations for 
+    Betelgeuse (alf Ori) from the AAVSO International Database (AID) via the VSX delimited-text API.
     '''
-    url : str = 'https://apps.aavso.org/webobs/results/?star=betelgeuse&num_results=200&page='
+    url: str = 'https://www.aavso.org/vsx/index.php'
