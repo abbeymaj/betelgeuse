@@ -2,7 +2,7 @@
 
 The objective of this project is to collect and analyze photometric magnitude data of Betelgeuse (Alpha Orionis) over time, enabling insights into its pulsation cycles, dimming events, and pre-supernova behavior.
 
-The project fetches and stores the Magnitude data for Betelgeuse from the Association of Variable Star Observers (AAVSO) website. 
+This project utilizes the American Association of Variable Star Observers (AAVSO) International Variable Star Index (VSX) API to programmatically retrieve data on Alpha Orionis (Betelgeuse). The API provides automated access to real-time coordinate, observational, and catalog metadata directly from the global VSX database. 
 
 The project defines an Extract Transform Load (ETL) pipeline that cleans, transforms and then loads the fetched data into a SQLite database.
 
